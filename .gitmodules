@@ -1,3 +1,6 @@
 [submodule "common_csv_1"]
 	path = common_csv_1
 	url = https://github.com/ntxuan40/common_csv_1
+[submodule "common_csv_2"]
+	path = common_csv_2
+	url = https://github.com/syphuonglam/common_csv_2.git

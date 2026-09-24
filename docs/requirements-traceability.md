@@ -88,7 +88,20 @@ This document maps the original raw business requirement to the derived software
 - Non-functional requirements covered: NFR-001 through NFR-008
 - Out-of-scope items not covered: category management, search/filter, notifications, attachments, SLA automation, dashboards, external integrations, and multi-technician workflows
 
-## 7. Gaps and Follow-up Items
+## 7. Domain and Data Model Traceability
+
+| Requirement area | Domain model element | JPA entity | SQLite table | Validation/test coverage |
+| --- | --- | --- | --- | --- |
+| Ticket creation and ownership | User, Ticket | UserEntity, TicketEntity | users, tickets | TC-001, TC-002, TC-003 |
+| Device association | Device, Ticket | DeviceEntity, TicketEntity | devices, tickets | TC-001, TC-015 |
+| Ticket lifecycle | Ticket, TicketStatus | TicketEntity | tickets | TC-004, TC-007, TC-009, TC-011, TC-012, TC-013 |
+| Role-based assignment and resolution | User, UserRole | UserEntity | users | TC-004, TC-006, TC-008, TC-020 |
+| Default priority and validation | Priority, Ticket | TicketEntity | tickets | TC-003, TC-019 |
+| SQLite persistence and config | Ticket, User, Device | JPA entities | users, devices, tickets | TC-015, TC-016 |
+| Demo data initialization | User, Device, Ticket | UserEntity, DeviceEntity, TicketEntity | users, devices, tickets | TC-017, TC-018, TC-DD-01 to TC-DD-05 |
+| Audit and timestamps | User, Device, Ticket | entity timestamps | users, devices, tickets | integration validation |
+
+## 8. Gaps and Follow-up Items
 
 The traceability matrix shows explicit coverage for the current requirement set. The following items still require human decision before implementation proceeds:
 
@@ -97,3 +110,4 @@ The traceability matrix shows explicit coverage for the current requirement set.
 3. Whether a category field is required for future releases
 4. Whether a lightweight search/filter feature is expected in the MVP or should be deferred
 5. Whether admin users are fixed roles or permission-derived from a user profile model
+6. Whether the project should persist a separate ticket history table in a later release

@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.transaction.annotation.Transactional;
+import java.io.File;
 
 import com.example.itsupportticket.domain.enums.DeviceStatus;
 import com.example.itsupportticket.domain.enums.Priority;
@@ -28,6 +29,14 @@ import com.example.itsupportticket.domain.repository.UserRepository;
 @AutoConfigureMockMvc
 @Transactional
 class TicketControllerIntegrationTest {
+
+    static {
+        File directory = new File("./data");
+        if (!directory.exists()) {
+            directory.mkdirs();
+            System.out.println(">>> [Hệ thống Test] Đã tự động tạo thư mục: " + directory.getAbsolutePath());
+        }
+    }
 
     @Autowired
     private MockMvc mockMvc;

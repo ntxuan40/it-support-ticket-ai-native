@@ -45,6 +45,8 @@ This document maps the original raw business requirement to the derived software
 
 ## 4. API Traceability
 
+The detailed frontend-to-backend contract is defined in docs/api-spec.md. This matrix remains the high-level traceability view of the same requirement-to-endpoint mapping.
+
 | API | Requirement IDs | Purpose |
 | --- | --- | --- |
 | POST /api/tickets | FR-001, FR-007, FR-010, BR-001, BR-002, BR-007 | Create a ticket with required data and default priority |

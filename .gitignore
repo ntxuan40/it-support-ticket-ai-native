@@ -1,0 +1,34 @@
+# Java / Maven
+/target/
+**/target/
+*.class
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Build artifacts
+/dist/
+
+# Runtime SQLite database files
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/data/*.db
+**/data/*.sqlite
+**/data/*.sqlite3
+
+# Local runtime folders
+/data/
+**/data/
+
+# OS files
+.DS_Store
+Thumbs.db

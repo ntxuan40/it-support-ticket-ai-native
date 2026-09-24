@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: it-support-ticket
+  datasource:
+    url: jdbc:sqlite:${IT_SUPPORT_TICKET_DB_PATH:./data/it-support-ticket.db}
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+
+it:
+  support:
+    ticket:
+      database:
+        path: ${IT_SUPPORT_TICKET_DB_PATH:./data/it-support-ticket.db}
+      demo-data:
+        enabled: true

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient; // Thêm import này
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.DefaultApplicationArguments;
 
@@ -70,8 +71,10 @@ class DemoDataInitializerTest {
     void run_shouldSkipSeeding_whenDatabaseAlreadyContainsData() {
         when(demoDataProperties.isEnabled()).thenReturn(true);
         when(userRepository.count()).thenReturn(10L);
-        when(deviceRepository.count()).thenReturn(3L);
-        when(ticketRepository.count()).thenReturn(2L);
+        
+        // Sử dụng lenient() để Mockito không bắt lỗi khi các repository này không được gọi đến do return sớm
+        lenient().when(deviceRepository.count()).thenReturn(3L);
+        lenient().when(ticketRepository.count()).thenReturn(2L);
 
         initializer.run(new DefaultApplicationArguments(new String[0]));
 

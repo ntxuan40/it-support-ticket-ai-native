@@ -82,6 +82,18 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public TicketResponse getTicketById(Long ticketId) {
+        return getTicketById(ticketId, null, null);
+    }
+
+    @Transactional(readOnly = true)
+    public TicketResponse getTicketById(Long ticketId, Long actingUserId, UserRole actingRole) {
+        if (actingUserId == null || actingRole == null) {
+            throw new ForbiddenOperationException("User identity is required.");
+        }
+        if (!isAllowedToViewTicket(actingRole)) {
+            throw new ForbiddenOperationException("User is not permitted to view tickets.");
+        }
+
         TicketEntity ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found."));
         return ticketMapper.toResponse(ticket);
@@ -190,6 +202,10 @@ public class TicketService {
 
     private boolean isAllowedToCreateTicket(UserRole role) {
         return role == UserRole.EMPLOYEE || role == UserRole.ADMIN;
+    }
+
+    private boolean isAllowedToViewTicket(UserRole role) {
+        return role == UserRole.EMPLOYEE || role == UserRole.TECH_LEAD || role == UserRole.IT_TECHNICIAN || role == UserRole.ADMIN;
     }
 
     private void validateActorIdentity(Long actingUserId, UserRole actingRole) {

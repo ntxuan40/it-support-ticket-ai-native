@@ -14,6 +14,13 @@ The project implements the core support-ticket lifecycle below:
 
 This is a compact MVP for local development and demo use, with SQLite-backed persistence and seeded data when the database is empty.
 
+## Prompt history / mini project log
+
+The team uses a Google Sheet to record the history of prompts and the progress of the mini project:
+
+- Link: https://docs.google.com/spreadsheets/d/1N5R2yYQpAXXBMq5kJgp2hJbksLqaVGNrHP52u7MAXJs/edit?usp=sharing
+- Purpose: store prompt history, ideas, progress updates, and notes throughout the mini project.
+
 ## Scope
 
 In scope for the current implementation:

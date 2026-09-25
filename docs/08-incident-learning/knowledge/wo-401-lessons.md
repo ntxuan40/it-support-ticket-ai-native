@@ -4,13 +4,13 @@
 
 This knowledge record is derived from the following repository evidence:
 
-- `docs/WO-401-evidence.md`
+- `../WO-401-evidence.md`
 - `.github/workflows/ci.yml`
-- `docs/test-design.md`
-- `docs/ai-test-review.md`
-- `docs/owasp-review.md`
-- `docs/pr-quality-gates.md`
-- `docs/ai-human-review.md`
+- `../../04-design/test-design.md`
+- `../../06-quality-security/ai-test-review.md`
+- `../../06-quality-security/owasp-review.md`
+- `../../06-quality-security/pr-quality-gates.md`
+- `../../06-quality-security/ai-human-review.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `CONTRIBUTING.md`
 
@@ -89,11 +89,11 @@ The following rules are directly supported by the WO-401 review evidence:
 The following existing documents are reusable templates or should be kept as templates:
 
 - PR summary, scope, verification, and risk sections from `.github/PULL_REQUEST_TEMPLATE.md`.
-- Requirement-to-test mapping structure from `docs/test-design.md`.
-- Finding format and evidence/status distinction from `docs/ai-test-review.md` and `docs/owasp-review.md`.
-- AI/human responsibility checklist from `docs/ai-human-review.md`.
-- CI quality-gate structure from `docs/pr-quality-gates.md`.
-- Work-order evidence structure from `docs/WO-401-evidence.md`.
+- Requirement-to-test mapping structure from `../../04-design/test-design.md`.
+- Finding format and evidence/status distinction from `../../06-quality-security/ai-test-review.md` and `../../06-quality-security/owasp-review.md`.
+- AI/human responsibility checklist from `../../06-quality-security/ai-human-review.md`.
+- CI quality-gate structure from `../../06-quality-security/pr-quality-gates.md`.
+- Work-order evidence structure from `../WO-401-evidence.md`.
 
 These templates should remain evidence-oriented and should not claim controls that are not configured or verified.
 

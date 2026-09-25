@@ -35,7 +35,7 @@ Result:
 
 ### Contract and implementation alignment
 
-- The frontend remains strictly aligned to the backend API contract in docs/api-spec.md.
+- The frontend remains strictly aligned to the backend API contract in ../03-api/api-spec.md.
 - Demo-data config and startup logic are consistent with the actual DemoDataInitializer implementation.
 - The misleading placeholder configuration was removed to avoid confusion during release review.
 

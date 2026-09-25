@@ -12,7 +12,7 @@ The review is evidence-based. It does not claim that the system is secure merely
 
 - **Finding ID:** SEC-001
 - **OWASP category:** Broken Access Control (A01)
-- **Component/file:** `TicketController.java`, `TicketService.java`; `docs/api-spec.md` API-02
+- **Component/file:** `TicketController.java`, `TicketService.java`; `../03-api/api-spec.md` API-02
 - **Evidence:** API-02 documents authentication as required for `GET /api/tickets/{id}` and requires the actor to be allowed to view the ticket. `TicketController.getTicket` accepts only the path ID and calls `ticketService.getTicketById(id)` without identity headers. `TicketService.getTicketById` loads and returns the ticket without an actor or role check. The existing GET integration test supplies headers, but the controller does not consume them.
 - **Security impact:** A caller who knows a ticket ID may retrieve ticket details without the documented authorization context. Ticket descriptions, requester, assignment, and resolution information may be disclosed.
 - **Reproduction/verification approach:** Send `GET /api/tickets/{id}` without `X-User-Id` and `X-User-Role` for an existing ticket and observe whether a `200` response is returned.
@@ -24,7 +24,7 @@ The review is evidence-based. It does not claim that the system is secure merely
 
 - **Finding ID:** SEC-002
 - **OWASP category:** Identification and Authentication Failures (A07)
-- **Component/file:** `TicketController.java`, `TicketService.java`; `docs/api-spec.md` section 3.4
+- **Component/file:** `TicketController.java`, `TicketService.java`; `../03-api/api-spec.md` section 3.4
 - **Evidence:** The API uses `X-User-Id` and `X-User-Role` as the acting-user context. The controller parses the role string, and the service compares the supplied ID with the assigned technician ID, but there is no authentication mechanism proving that the caller controls the supplied identity. The API specification explicitly describes formal identity federation as out of scope and calls this an intentionally lightweight MVP model.
 - **Security impact:** If the API is reachable by an untrusted caller, a caller may be able to impersonate another user by supplying that user's ID and role headers. Authorization checks based only on these headers cannot establish caller authenticity.
 - **Reproduction/verification approach:** Send a state-changing request with a known or guessed technician ID and the corresponding role header, without presenting any independently authenticated credential. Verify whether the request reaches service authorization as that identity.

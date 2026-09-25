@@ -12,7 +12,7 @@ This defect was identified during end-to-end verification and security review. N
 
 The requirement source states that the backend validates the acting user's role and identity and that identity headers authorize backend actions.
 
-API-02 in `docs/api-spec.md` further specifies that ticket viewing requires:
+API-02 in `../03-api/api-spec.md` further specifies that ticket viewing requires:
 
 - Caller identity and role headers.
 - A valid ticket ID.

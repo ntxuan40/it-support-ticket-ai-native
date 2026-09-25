@@ -2,7 +2,7 @@
 
 ## Source of Truth
 
-Business requirements are taken only from `docs/Requirements-IT-Support-Ticket-Document.md`. API and implementation references are used to identify the exercised use case and evidence, but they do not add business requirements.
+Business requirements are taken only from `../01-requirements/Requirements-IT-Support-Ticket-Document.md`. API and implementation references are used to identify the exercised use case and evidence, but they do not add business requirements.
 
 ## Runtime Verification Context
 
@@ -80,7 +80,7 @@ Business requirements are taken only from `docs/Requirements-IT-Support-Ticket-D
 - **Expected result:** The lifecycle succeeds in order, invalid transitions are rejected, and every backend action validates the caller context.
 - **Actual result:** The lifecycle integration test and representative invalid-transition tests passed. However, `TicketController.getTicket` accepts only the path ID and does not receive or validate identity headers; `TicketService.getTicketById` performs no actor/role authorization check. This does not satisfy the documented requirement that ticket viewing requires caller identity and an allowed role.
 - **Automated test:** `ticketLifecycle_shouldCreateAssignStartAndResolveTicket`; `startWork_shouldRejectOpenTicketAndPreserveState`; `assignTicket_shouldRejectDuplicateAssignment`.
-- **Evidence:** `TicketController.java`, `TicketService.java`, `docs/api-spec.md` API-02, and `docs/owasp-review.md` SEC-001. The existing GET test supplies headers but does not prove that they affect authorization.
+- **Evidence:** `TicketController.java`, `TicketService.java`, `../03-api/api-spec.md` API-02, and `../06-quality-security/owasp-review.md` SEC-001. The existing GET test supplies headers but does not prove that they affect authorization.
 - **Status:** FAIL
 
 ### Defect Detected — Verification Stopped
@@ -103,7 +103,7 @@ The view authorization mismatch is a defect against the documented API behavior.
 - **Expected result:** Structured HTTP errors are returned and failed state-changing operations do not mutate ticket state.
 - **Actual result:** Existing tests cover representative cases, but this flow was not independently continued after the Flow 5 defect was detected. Error-field assertions are not uniform for every negative case.
 - **Automated test:** Existing negative tests in `TicketControllerIntegrationTest`, including `createTicket_shouldRejectBlankTitle`, `createTicket_shouldRejectMissingDescription`, `createTicket_shouldRejectInvalidPriority`, `resolveTicket_shouldRejectBlankResolutionNote`, `malformedRequest_shouldReturnBadRequest`, and assignment/start rejection tests.
-- **Evidence:** Maven test run passed before the verification stop; `GlobalExceptionHandler`; `docs/test-design.md` and `docs/ai-test-review.md`.
+- **Evidence:** Maven test run passed before the verification stop; `GlobalExceptionHandler`; `../04-design/test-design.md` and `../06-quality-security/ai-test-review.md`.
 - **Status:** NOT VERIFIED
 
 ## Flow 7 — SQLite Persistence and Configuration

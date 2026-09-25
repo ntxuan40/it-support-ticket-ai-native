@@ -4,8 +4,8 @@
 
 This review applies the principle that AI-generated tests must be reviewed, challenged, and verified by humans. The review compares:
 
-- `docs/Requirements-IT-Support-Ticket-Document.md`
-- `docs/test-design.md`
+- `../01-requirements/Requirements-IT-Support-Ticket-Document.md`
+- `../04-design/test-design.md`
 - Existing backend test classes
 - The controller, service, exception handler, state machine, and demo initializer covered by those tests
 - The Maven and SQLite test configuration

@@ -116,14 +116,29 @@ async function loadTicketList() {
   }
 }
 
+const ERROR_KEYS = {
+  TICKET_ID_REQUIRED: 'tickets.validation.idRequired',
+};
+
 function upsertTicket(ticket) {
-  const index = state.tickets.findIndex((item) => Number(item.id) === Number(ticket.id));
-  if (index >= 0) {
-    state.tickets[index] = ticket;
-  } else {
-    state.tickets.unshift(ticket);
+  const normalizedTicketId = Number(ticket?.id);
+
+  if (!Number.isFinite(normalizedTicketId)) {
+    throw new Error(ERROR_KEYS.TICKET_ID_REQUIRED);
   }
-  state.selectedTicketId = ticket.id;
+
+  const existingTicketIndex = state.tickets.findIndex(
+    (item) => Number(item.id) === normalizedTicketId
+  );
+
+  const nextTickets = existingTicketIndex >= 0
+    ? state.tickets.map((item) =>
+        Number(item.id) === normalizedTicketId ? { ...item, ...ticket } : item
+      )
+    : [ticket, ...state.tickets];
+
+  state.tickets = nextTickets;
+  state.selectedTicketId = normalizedTicketId;
 }
 
 function getSelectedTicket() {

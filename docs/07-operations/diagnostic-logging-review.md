@@ -57,7 +57,7 @@ No logging code was changed. No sensitive data was added to logs or examples.
 ## 6. CI Failure Diagnosis and RCA
 
 - **Classification:** Needs Improvement
-- **Evidence:** `.github/workflows/ci.yml` runs `mvn clean test`. Maven/Surefire output identifies test classes, test methods, counts, failures, errors, and assertion stack traces. `docs/WO-401-evidence.md` records a controlled incorrect assertion, failed local/CI verification, restoration, and passing CI. The PR template requires the verification command and observed result.
+- **Evidence:** `.github/workflows/ci.yml` runs `mvn clean test`. Maven/Surefire output identifies test classes, test methods, counts, failures, errors, and assertion stack traces. `../08-incident-learning/WO-401-evidence.md` records a controlled incorrect assertion, failed local/CI verification, restoration, and passing CI. The PR template requires the verification command and observed result.
 - **Assessment:** The current CI output is sufficient to identify ordinary compilation and test assertion failures. The workflow does not explicitly upload Surefire reports, publish a summarized artifact, classify infrastructure versus code/test failures, or attach an RCA record. Maven is invoked directly and the Maven version is not pinned, which can complicate reproducibility.
 - **Recommendation:** Preserve Surefire reports or a concise test summary as CI artifacts, record the failing command and failure classification in the PR/work-order evidence, and use an RCA record for recurring or release-blocking failures. Pin Maven when reproducibility across runner images is required.
 

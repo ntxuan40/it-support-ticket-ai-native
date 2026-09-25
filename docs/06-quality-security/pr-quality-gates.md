@@ -40,7 +40,7 @@ mvn clean test
 
 Therefore, any dependency-resolution error, compilation error, test compilation error, test failure, test error, or Maven/Surefire failure propagates as a failed job because Maven returns a non-zero exit status.
 
-The repository evidence in `docs/WO-401-evidence.md` records an intentional incorrect test assertion that caused local Maven and GitHub Actions failures, followed by restoration of the assertion and a passing CI result.
+The repository evidence in `../08-incident-learning/WO-401-evidence.md` records an intentional incorrect test assertion that caused local Maven and GitHub Actions failures, followed by restoration of the assertion and a passing CI result.
 
 ## Success Gate
 
@@ -57,7 +57,7 @@ There is no separate lint, coverage, dependency-audit, or security-scan job in t
 
 ## Merge Gate
 
-The repository evidence in `docs/WO-401-evidence.md` states that:
+The repository evidence in `../08-incident-learning/WO-401-evidence.md` states that:
 
 - A Pull Request is required before merging.
 - A required CI status check is required.
@@ -74,9 +74,9 @@ The checked-in workflow supplies the CI status; the enforcement of the required 
 - **Dependency resolution:** Maven resolves dependencies declared in the root and backend POMs; setup-java enables Maven caching.
 - **Compilation and tests:** `mvn clean test` includes compile, test compilation, and Surefire execution through the Maven reactor.
 - **Test isolation:** `it-support-ticket-app/backend/src/test/resources/application.yml` uses `./target/it-support-ticket-test.db` and disables demo data.
-- **Failure propagation:** `docs/WO-401-evidence.md` records a deliberate assertion failure in local Maven and GitHub Actions, followed by a restored passing state.
-- **Required check and branch ruleset:** `docs/WO-401-evidence.md` records the required CI status check, Pull Request requirement, and `main` ruleset.
-- **PR evidence:** `docs/WO-401-evidence.md` references PR #17 as reviewed and merged.
+- **Failure propagation:** `../08-incident-learning/WO-401-evidence.md` records a deliberate assertion failure in local Maven and GitHub Actions, followed by a restored passing state.
+- **Required check and branch ruleset:** `../08-incident-learning/WO-401-evidence.md` records the required CI status check, Pull Request requirement, and `main` ruleset.
+- **PR evidence:** `../08-incident-learning/WO-401-evidence.md` references PR #17 as reviewed and merged.
 - **Existing PR configuration:** `.github/PULL_REQUEST_TEMPLATE.md` requests a summary, scope, and `mvn clean test` verification.
 
 ## Gap
@@ -91,7 +91,7 @@ The checked-in workflow supplies the CI status; the enforcement of the required 
 ### Gap 2 — Branch protection is not machine-readable in the repository
 
 - **Gap:** The required status check and `main` branch ruleset cannot be independently verified from the checked-in files.
-- **Evidence:** No ruleset or branch-protection file was found under the repository; the configuration is recorded in `docs/WO-401-evidence.md` as GitHub repository evidence.
+- **Evidence:** No ruleset or branch-protection file was found under the repository; the configuration is recorded in `../08-incident-learning/WO-401-evidence.md` as GitHub repository evidence.
 - **Risk:** Repository documentation can become stale if GitHub settings change, potentially allowing merges without the intended CI check.
 - **Recommendation:** Verify the GitHub branch ruleset in repository settings and keep the CI job name stable so the required status check remains correctly bound. No workflow change is necessary based on the current evidence.
 

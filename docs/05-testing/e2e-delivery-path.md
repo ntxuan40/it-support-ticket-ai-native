@@ -30,11 +30,11 @@ Requirement
 
 - **Purpose:** Define the business behavior and scope that delivery must satisfy.
 - **Input:** Business need for the IT support ticket system.
-- **Output:** `docs/Requirements-IT-Support-Ticket-Document.md`, including eight requirements, in-scope behaviors, and out-of-scope behaviors.
+- **Output:** `../01-requirements/Requirements-IT-Support-Ticket-Document.md`, including eight requirements, in-scope behaviors, and out-of-scope behaviors.
 - **Owner:** Not explicitly defined in the repository.
-- **Automated control:** Requirement traceability and test design are documented in `docs/test-design.md`; no automated requirement parser or gate exists.
-- **Human control:** Human review is required to validate the specification and challenge invented behavior, as stated in `docs/ai-human-review.md` and `CONTRIBUTING.md`.
-- **Evidence:** `docs/Requirements-IT-Support-Ticket-Document.md`, `docs/test-design.md`.
+- **Automated control:** Requirement traceability and test design are documented in `../04-design/test-design.md`; no automated requirement parser or gate exists.
+- **Human control:** Human review is required to validate the specification and challenge invented behavior, as stated in `../06-quality-security/ai-human-review.md` and `CONTRIBUTING.md`.
+- **Evidence:** `../01-requirements/Requirements-IT-Support-Ticket-Document.md`, `../04-design/test-design.md`.
 - **Failure condition:** The implementation or tests do not match the source requirements, or introduce out-of-scope behavior.
 
 ## Stage 2 — Issue
@@ -45,7 +45,7 @@ Requirement
 - **Owner:** Contributor/team ownership is not named explicitly.
 - **Automated control:** No repository automation validates issue completeness.
 - **Human control:** `CONTRIBUTING.md` requires issue-first work and explicit problem, behavior, and acceptance criteria.
-- **Evidence:** `CONTRIBUTING.md`; WO-401 is documented as the relevant work item in `docs/WO-401-evidence.md`.
+- **Evidence:** `CONTRIBUTING.md`; WO-401 is documented as the relevant work item in `../08-incident-learning/WO-401-evidence.md`.
 - **Failure condition:** Work starts without a tracked scope or acceptance criteria, or the change exceeds the issue scope.
 
 ## Stage 3 — Work Order
@@ -56,7 +56,7 @@ Requirement
 - **Owner:** Not explicitly defined in the repository.
 - **Automated control:** Maven tests and CI execute the technical verification described by the work order.
 - **Human control:** Human review validates that implementation and evidence remain within WO-401 scope.
-- **Evidence:** `docs/WO-401-evidence.md`, `docs/pr-quality-gates.md`.
+- **Evidence:** `../08-incident-learning/WO-401-evidence.md`, `../06-quality-security/pr-quality-gates.md`.
 - **Failure condition:** The work order is marked complete without passing verification or without evidence for its acceptance criteria.
 
 ## Stage 4 — Branch
@@ -77,8 +77,8 @@ Requirement
 - **Output:** Proposed code, tests, review findings, and documentation changes.
 - **Owner:** AI assists; the human engineer remains responsible for the resulting change.
 - **Automated control:** Compilation and tests can reject behavior that does not build or pass the configured suite.
-- **Human control:** `docs/ai-human-review.md` requires human validation of requirements, generated code, generated tests, security, behavior, and merge decision.
-- **Evidence:** `docs/ai-human-review.md`, `CONTRIBUTING.md` AI/Copilot safeguards.
+- **Human control:** `../06-quality-security/ai-human-review.md` requires human validation of requirements, generated code, generated tests, security, behavior, and merge decision.
+- **Evidence:** `../06-quality-security/ai-human-review.md`, `CONTRIBUTING.md` AI/Copilot safeguards.
 - **Failure condition:** AI output is accepted without diff review, invents unsupported behavior, or is treated as approved solely because tests pass.
 
 ## Stage 6 — Tests
@@ -88,8 +88,8 @@ Requirement
 - **Output:** Application, API/integration, and demo initializer test results.
 - **Owner:** Engineering team; human reviewer validates test relevance.
 - **Automated control:** `mvn clean test` compiles production/test code and runs JUnit/Spring tests through Maven Surefire. Test configuration uses `./target/it-support-ticket-test.db` and disables demo seeding.
-- **Human control:** `docs/ai-test-review.md` and `docs/ai-human-review.md` require challenge of coverage, negative cases, authorization, state transitions, persistence, isolation, and false confidence.
-- **Evidence:** Existing test classes, `docs/test-design.md`, `docs/ai-test-review.md`, backend test `application.yml`.
+- **Human control:** `../06-quality-security/ai-test-review.md` and `../06-quality-security/ai-human-review.md` require challenge of coverage, negative cases, authorization, state transitions, persistence, isolation, and false confidence.
+- **Evidence:** Existing test classes, `../04-design/test-design.md`, `../06-quality-security/ai-test-review.md`, backend test `application.yml`.
 - **Failure condition:** Compilation/test failure, untested required behavior being treated as verified, or tests depending on runtime data.
 
 ## Stage 7 — CI
@@ -100,7 +100,7 @@ Requirement
 - **Owner:** GitHub Actions executes; repository maintainers own the workflow configuration.
 - **Automated control:** `.github/workflows/ci.yml` checks out the repository, installs Temurin JDK 22, enables Maven cache, and runs `mvn clean test`.
 - **Human control:** Maintainers review workflow changes and CI results; the PR template requires the verification command and observed result.
-- **Evidence:** `.github/workflows/ci.yml`, `docs/pr-quality-gates.md`, `docs/WO-401-evidence.md`.
+- **Evidence:** `.github/workflows/ci.yml`, `../06-quality-security/pr-quality-gates.md`, `../08-incident-learning/WO-401-evidence.md`.
 - **Failure condition:** Checkout, dependency resolution, compilation, test compilation, or test execution returns a non-zero result.
 
 ## Stage 8 — Pull Request
@@ -111,7 +111,7 @@ Requirement
 - **Owner:** Contributor submits; reviewers evaluate.
 - **Automated control:** `pull_request` triggers CI; the PR template standardizes summary, scope, verification command, and notes.
 - **Human control:** Reviewers inspect the diff, requirements, risks, and CI result.
-- **Evidence:** `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/ci.yml`, PR #17 reference in `docs/WO-401-evidence.md`.
+- **Evidence:** `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/ci.yml`, PR #17 reference in `../08-incident-learning/WO-401-evidence.md`.
 - **Failure condition:** Missing scope/evidence, unexpected changes, failed CI, or unresolved review concerns.
 
 ## Stage 9 — AI Review
@@ -122,7 +122,7 @@ Requirement
 - **Owner:** AI provides analysis; human reviewer evaluates every finding.
 - **Automated control:** No automated gate validates AI review quality.
 - **Human control:** Human must challenge findings, verify evidence, and decide whether recommendations are valid.
-- **Evidence:** `docs/ai-test-review.md`, `docs/owasp-review.md`, `docs/ai-human-review.md`.
+- **Evidence:** `../06-quality-security/ai-test-review.md`, `../06-quality-security/owasp-review.md`, `../06-quality-security/ai-human-review.md`.
 - **Failure condition:** AI review is accepted without evidence review, or a generated finding is treated as fact without validation.
 
 ## Stage 10 — Human Review
@@ -132,8 +132,8 @@ Requirement
 - **Output:** Approval, rejection, or requested changes.
 - **Owner:** Human reviewer/maintainer.
 - **Automated control:** Required CI status check can block merge when configured in GitHub.
-- **Human control:** `docs/ai-human-review.md` defines the human checklist and explicit approve/reject decision.
-- **Evidence:** `CONTRIBUTING.md` human review requirement, `docs/ai-human-review.md`, PR #17 evidence.
+- **Human control:** `../06-quality-security/ai-human-review.md` defines the human checklist and explicit approve/reject decision.
+- **Evidence:** `CONTRIBUTING.md` human review requirement, `../06-quality-security/ai-human-review.md`, PR #17 evidence.
 - **Failure condition:** Merge approval is inferred from passing tests without human review, or requirements and risks remain unresolved.
 
 ## Stage 11 — Security Review
@@ -143,8 +143,8 @@ Requirement
 - **Output:** Security findings with severity, evidence, remediation, and disposition.
 - **Owner:** Human security reviewer; AI may assist with analysis.
 - **Automated control:** No dedicated security scanner or security gate is configured in the current workflow.
-- **Human control:** `docs/owasp-review.md` and `docs/ai-human-review.md` require independent human security review.
-- **Evidence:** `docs/owasp-review.md`, `docs/ai-human-review.md`.
+- **Human control:** `../06-quality-security/owasp-review.md` and `../06-quality-security/ai-human-review.md` require independent human security review.
+- **Evidence:** `../06-quality-security/owasp-review.md`, `../06-quality-security/ai-human-review.md`.
 - **Failure condition:** A security finding is ignored, secrets or sensitive data are exposed, or passing functional tests is treated as proof of security.
 
 ## Stage 12 — Merge
@@ -155,7 +155,7 @@ Requirement
 - **Owner:** Repository maintainer/reviewer; the exact GitHub role is not defined in repository files.
 - **Automated control:** GitHub required status check and branch ruleset are recorded as controls; the workflow supplies the CI check.
 - **Human control:** Human approval and merge decision are mandatory.
-- **Evidence:** `docs/WO-401-evidence.md` records the required PR, required CI status check, `main` ruleset, and reviewed/merged PR #17.
+- **Evidence:** `../08-incident-learning/WO-401-evidence.md` records the required PR, required CI status check, `main` ruleset, and reviewed/merged PR #17.
 - **Failure condition:** Required check fails, approval is missing, ruleset conditions are not met, or a human rejects the change.
 
 ## Stage 13 — Release
@@ -177,7 +177,7 @@ Requirement
 - **Owner:** Engineering team and human reviewer.
 - **Automated control:** `mvn clean test` and the GitHub Actions `build` job.
 - **Human control:** Human reviewer checks observed results against requirements and acceptance criteria.
-- **Evidence:** `docs/WO-401-evidence.md` records passing local tests, CI execution, an intentional failure, restoration, and passing CI; `docs/pr-quality-gates.md` describes the gates.
+- **Evidence:** `../08-incident-learning/WO-401-evidence.md` records passing local tests, CI execution, an intentional failure, restoration, and passing CI; `../06-quality-security/pr-quality-gates.md` describes the gates.
 - **Failure condition:** Verification is missing, stale, or does not cover the claimed acceptance criteria.
 
 ## Stage 15 — Evidence
@@ -188,7 +188,7 @@ Requirement
 - **Owner:** Contributor prepares evidence; human reviewer validates it.
 - **Automated control:** CI produces pass/fail status; no automatic evidence index or artifact publication is configured.
 - **Human control:** Human checks that evidence is current, accurate, and not overstated.
-- **Evidence:** `docs/WO-401-evidence.md`, `docs/test-design.md`, `docs/pr-quality-gates.md`, `docs/ai-test-review.md`, `docs/owasp-review.md`.
+- **Evidence:** `../08-incident-learning/WO-401-evidence.md`, `../04-design/test-design.md`, `../06-quality-security/pr-quality-gates.md`, `../06-quality-security/ai-test-review.md`, `../06-quality-security/owasp-review.md`.
 - **Failure condition:** Evidence claims behavior not implemented, omits failed verification, or cannot be traced to a command, review, PR, or configuration.
 
 ## Stage 16 — Close-out
@@ -199,7 +199,7 @@ Requirement
 - **Owner:** Not explicitly defined in the repository.
 - **Automated control:** No issue-close or work-order-close automation was found.
 - **Human control:** `CONTRIBUTING.md` states that an issue is closed only after verification is complete.
-- **Evidence:** `docs/WO-401-evidence.md` records WO-401 status as `Completed`; no separate issue-close event is present in the repository.
+- **Evidence:** `../08-incident-learning/WO-401-evidence.md` records WO-401 status as `Completed`; no separate issue-close event is present in the repository.
 - **Failure condition:** Work is marked complete without current verification or without resolving open review/security findings.
 
 ## Stage 17 — Knowledge Accumulation
@@ -210,21 +210,21 @@ Requirement
 - **Owner:** Engineering team; no individual owner is defined.
 - **Automated control:** No automated retrospective or knowledge-indexing control was found.
 - **Human control:** Humans decide which findings and process lessons are accurate and worth retaining.
-- **Evidence:** `docs/ai-human-review.md`, `docs/ai-test-review.md`, `docs/owasp-review.md`, `docs/pr-quality-gates.md`, and `docs/WO-401-evidence.md` accumulate guidance and evidence.
+- **Evidence:** `../06-quality-security/ai-human-review.md`, `../06-quality-security/ai-test-review.md`, `../06-quality-security/owasp-review.md`, `../06-quality-security/pr-quality-gates.md`, and `../08-incident-learning/WO-401-evidence.md` accumulate guidance and evidence.
 - **Failure condition:** Lessons are not recorded, are recorded without evidence, or become inconsistent with the implementation.
 
 ## Existing Controls
 
 - Requirements and explicit out-of-scope behavior are documented.
 - Issue-first workflow, scoped changes, branch naming, verification, and human review are documented in `CONTRIBUTING.md`.
-- AI output is defined as a proposal and human approval is required in `docs/ai-human-review.md`.
-- Test design maps requirements to scenarios and existing tests in `docs/test-design.md`.
+- AI output is defined as a proposal and human approval is required in `../06-quality-security/ai-human-review.md`.
+- Test design maps requirements to scenarios and existing tests in `../04-design/test-design.md`.
 - API integration tests use real Spring/SQLite wiring and test the main ticket lifecycle.
 - Test SQLite storage is isolated under `target`, and demo initialization is disabled for tests.
 - GitHub Actions runs for Pull Requests and uses JDK 22 with `mvn clean test`.
 - Maven failures propagate through the CI job.
 - PR template requires summary, scope, verification command, result, risks, and follow-up notes.
-- Security review findings are documented in `docs/owasp-review.md`.
+- Security review findings are documented in `../06-quality-security/owasp-review.md`.
 - WO-401 evidence records intentional CI failure, restoration, required CI status check, branch ruleset, and PR #17 review/merge evidence.
 
 ## Missing Controls

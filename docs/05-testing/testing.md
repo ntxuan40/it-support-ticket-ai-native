@@ -2,7 +2,7 @@
 
 ## 1. Scope
 
-This document captures the end-to-end verification of the application flow from user interface to REST API to backend service to repository and SQLite persistence, and back to the UI response. Verification is based on the documented contract in [docs/api-spec.md](api-spec.md), the backend integration test report in [it-support-ticket-app/backend/target/surefire-reports/TEST-com.example.itsupportticket.api.TicketControllerIntegrationTest.xml](../it-support-ticket-app/backend/target/surefire-reports/TEST-com.example.itsupportticket.api.TicketControllerIntegrationTest.xml), and the repository state in the application code.
+This document captures the end-to-end verification of the application flow from user interface to REST API to backend service to repository and SQLite persistence, and back to the UI response. Verification is based on the documented contract in [../03-api/api-spec.md](api-spec.md), the backend integration test report in [it-support-ticket-app/backend/target/surefire-reports/TEST-com.example.itsupportticket.api.TicketControllerIntegrationTest.xml](../it-support-ticket-app/backend/target/surefire-reports/TEST-com.example.itsupportticket.api.TicketControllerIntegrationTest.xml), and the repository state in the application code.
 
 > Important: browser-driven E2E execution was not performed in this session because terminal execution was explicitly skipped by the user. The scenarios below distinguish between verified backend evidence and verification gaps.
 

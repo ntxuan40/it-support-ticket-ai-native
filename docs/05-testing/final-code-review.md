@@ -14,10 +14,10 @@ This review covers the backend behavior, configuration integrity, API contract c
 - DatabaseProperties.java
 - application.yml
 - frontend src/main.js
-- docs/api-spec.md
-- docs/Software-requirements.md
-- docs/requirements-traceability.md
-- docs/testing.md
+- ../03-api/api-spec.md
+- ../01-requirements/Software-requirements.md
+- ../01-requirements/requirements-traceability.md
+- testing.md
 
 ## 3. Verification evidence
 

@@ -2,7 +2,7 @@
 
 ## Scope and Source
 
-This document traces the requirements in `docs/Requirements-IT-Support-Ticket-Document.md` to positive, negative, and boundary test scenarios. The source document defines eight requirements and does not assign separate FR or API identifiers, so this document uses `Requirement 1` through `Requirement 8` as the requirement references.
+This document traces the requirements in `../01-requirements/Requirements-IT-Support-Ticket-Document.md` to positive, negative, and boundary test scenarios. The source document defines eight requirements and does not assign separate FR or API identifiers, so this document uses `Requirement 1` through `Requirement 8` as the requirement references.
 
 The existing automated-test references below are limited to test classes and methods currently present in the repository.
 

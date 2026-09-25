@@ -85,11 +85,11 @@ This release covers the local MVP for an internal IT support ticket workflow wit
 
 ## Requirements covered
 
-- FR-001 through FR-010 from [docs/Software-requirements.md](Software-requirements.md)
-- lifecycle rules and domain constraints from [docs/domain-model.md](domain-model.md)
-- API contract from [docs/api-spec.md](api-spec.md)
-- architecture boundary from [docs/architecture.md](architecture.md)
-- traceability from [docs/requirements-traceability.md](requirements-traceability.md)
+- FR-001 through FR-010 from [../01-requirements/Software-requirements.md](Software-requirements.md)
+- lifecycle rules and domain constraints from [../02-architecture/domain-model.md](domain-model.md)
+- API contract from [api-spec.md](api-spec.md)
+- architecture boundary from [../02-architecture/architecture.md](architecture.md)
+- traceability from [../01-requirements/requirements-traceability.md](requirements-traceability.md)
 
 ## Build and test commands
 

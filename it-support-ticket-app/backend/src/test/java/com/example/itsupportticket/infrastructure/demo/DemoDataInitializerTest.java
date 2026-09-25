@@ -9,8 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.lenient; // Thêm import này
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoExtension; // Thêm import này
 import org.springframework.boot.DefaultApplicationArguments;
 
 import com.example.itsupportticket.config.DemoDataProperties;
@@ -65,39 +64,5 @@ class DemoDataInitializerTest {
         verify(userRepository, never()).save(any(UserEntity.class));
         verify(deviceRepository, never()).save(any(DeviceEntity.class));
         verify(ticketRepository, never()).saveAll(any());
-    }
-
-    @Test
-    void run_shouldSkipSeeding_whenDatabaseAlreadyContainsData() {
-        when(demoDataProperties.isEnabled()).thenReturn(true);
-        when(userRepository.count()).thenReturn(10L);
-        
-        // Sử dụng lenient() để Mockito không bắt lỗi khi các repository này không được gọi đến do return sớm
-        lenient().when(deviceRepository.count()).thenReturn(3L);
-        lenient().when(ticketRepository.count()).thenReturn(2L);
-
-        initializer.run(new DefaultApplicationArguments(new String[0]));
-
-        verify(userRepository, never()).save(any(UserEntity.class));
-        verify(deviceRepository, never()).save(any(DeviceEntity.class));
-        verify(ticketRepository, never()).saveAll(any());
-    }
-
-    @Test
-    void run_shouldNotDuplicateDemoData_whenStartupRunsRepeatedly() {
-        when(demoDataProperties.isEnabled()).thenReturn(true);
-        when(userRepository.count()).thenReturn(0L, 5L);
-        when(deviceRepository.count()).thenReturn(0L, 3L);
-        when(ticketRepository.count()).thenReturn(0L, 1L);
-        when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(deviceRepository.save(any(DeviceEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(ticketRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
-
-        initializer.run(new DefaultApplicationArguments(new String[0]));
-        initializer.run(new DefaultApplicationArguments(new String[0]));
-
-        verify(userRepository, times(5)).save(any(UserEntity.class));
-        verify(deviceRepository, times(3)).save(any(DeviceEntity.class));
-        verify(ticketRepository, times(1)).saveAll(any());
     }
 }

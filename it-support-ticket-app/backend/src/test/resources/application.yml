@@ -2,7 +2,7 @@ spring:
   application:
     name: it-support-ticket
   datasource:
-    url: jdbc:sqlite:${IT_SUPPORT_TICKET_DB_PATH:./data/it-support-ticket.db}
+    url: jdbc:sqlite:./target/it-support-ticket-test.db
     driver-class-name: org.sqlite.JDBC
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
@@ -17,6 +17,6 @@ it:
   support:
     ticket:
       database:
-        path: ${IT_SUPPORT_TICKET_DB_PATH:./data/it-support-ticket.db}
+        path: ./target/it-support-ticket-test.db
       demo-data:
-        enabled: true
+        enabled: false

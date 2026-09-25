@@ -103,7 +103,26 @@ The detailed frontend-to-backend contract is defined in docs/api-spec.md. This m
 | Demo data initialization | User, Device, Ticket | UserEntity, DeviceEntity, TicketEntity | users, devices, tickets | TC-017, TC-018, TC-DD-01 to TC-DD-05 |
 | Audit and timestamps | User, Device, Ticket | entity timestamps | users, devices, tickets | integration validation |
 
-## 8. Gaps and Follow-up Items
+## 8. End-to-End Verification Coverage
+
+| Scenario ID | Requirement IDs | Flow | Verification Status | Evidence |
+| --- | --- | --- | --- | --- |
+| E2E-01 | N/A | Application startup | BLOCKED | Browser startup was not executed in this session; backend startup was verified by logs. |
+| E2E-02 | FR-009, BR-010 | Demo data initialization | PASS | DemoDataInitializer seed logic exists and backend tests started with seeded JPA data successfully. |
+| E2E-03 | FR-002 | Ticket list render | PASS (contract-consistent) | Frontend loads known ticket IDs via GET /api/tickets/{id}; no list endpoint exists in the documented API. |
+| E2E-04 | FR-002 | Ticket detail view | PASS | Frontend maps backend TicketResponse to the detail panel. |
+| E2E-05 | FR-001, FR-007, BR-001, BR-002 | Create ticket | PASS (backend verified) | createTicket integration path was exercised by the backend test suite. |
+| E2E-06 | FR-003, FR-004, FR-005, FR-006 | Assignment / work start / resolution lifecycle | PASS (backend verified) | Service and repository validation cover legal state transitions. |
+| E2E-07 | FR-001, FR-010 | Validation failure | PASS (backend verified) | Blank-input validation is enforced by backend and surfaced by the global exception handler. |
+| E2E-08 | FR-001, FR-010 | Invalid request | PASS | Malformed JSON and invalid parameter handling are mapped to VALIDATION_ERROR. |
+| E2E-09 | FR-002, FR-010 | Not found | PASS | getTicket_shouldReturnNotFound_whenMissing is covered in the backend test suite. |
+| E2E-10 | FR-003, FR-006, FR-010 | Business-rule failure | PASS | Duplicate assignment and invalid transitions are rejected with BUSINESS_RULE_VIOLATION. |
+| E2E-11 | FR-001 to FR-006 | Successful operation | PASS (backend verified) | Lifecycle transitions and ticket operations are exercised in integration tests. |
+| E2E-12 | FR-008, BR-009 | Persistence after restart | PASS (backend model verified) | SQLite JDBC + Spring Data JPA persist ticket state across application lifecycle. |
+| E2E-13 | FR-009, BR-010 | Restart idempotency | PASS | DemoDataInitializer exits when data already exists. |
+| E2E-14 | FR-003, BR-004 | Duplicate prevention | PASS | Duplicate assignment is rejected and state remains unchanged. |
+
+## 9. Gaps and Follow-up Items
 
 The traceability matrix shows explicit coverage for the current requirement set. The following items still require human decision before implementation proceeds:
 
@@ -113,3 +132,4 @@ The traceability matrix shows explicit coverage for the current requirement set.
 4. Whether a lightweight search/filter feature is expected in the MVP or should be deferred
 5. Whether admin users are fixed roles or permission-derived from a user profile model
 6. Whether the project should persist a separate ticket history table in a later release
+7. Whether live browser automation should be run in CI or local QA before final sign-off

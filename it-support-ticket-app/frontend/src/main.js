@@ -116,6 +116,10 @@ async function loadTicketList() {
   }
 }
 
+const ERROR_KEYS = {
+  TICKET_ID_REQUIRED: 'tickets.validation.idRequired',
+};
+
 function upsertTicket(ticket) {
   const index = state.tickets.findIndex((item) => Number(item.id) === Number(ticket.id));
   if (index >= 0) {

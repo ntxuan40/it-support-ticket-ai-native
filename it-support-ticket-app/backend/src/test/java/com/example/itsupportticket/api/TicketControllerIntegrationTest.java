@@ -1,5 +1,6 @@
 package com.example.itsupportticket.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.File;
 
 import com.example.itsupportticket.domain.enums.DeviceStatus;
 import com.example.itsupportticket.domain.enums.Priority;
@@ -30,16 +30,11 @@ import com.example.itsupportticket.domain.repository.UserRepository;
 @Transactional
 class TicketControllerIntegrationTest {
 
-    static {
-        File directory = new File("./data");
-        if (!directory.exists()) {
-            directory.mkdirs();
-            System.out.println(">>> [Hệ thống Test] Đã tự động tạo thư mục: " + directory.getAbsolutePath());
-        }
-    }
-
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private UserRepository userRepository;
@@ -77,7 +72,42 @@ class TicketControllerIntegrationTest {
                 .header("X-User-Role", "EMPLOYEE")
                 .content("{\"requesterUserId\":\"" + employee.getId() + "\",\"deviceId\":\"" + device.getId() + "\",\"title\":\"   \",\"description\":\"Broken\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("Title is required."))
+                .andExpect(jsonPath("$.path").value("/api/tickets"));
+    }
+
+    @Test
+    void createTicket_shouldRejectMissingDescription() throws Exception {
+        UserEntity employee = userRepository.save(new UserEntity("Alice", "alice-description@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+        DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-DESCRIPTION", "Laptop", "LAPTOP", "Floor 2", employee, DeviceStatus.ACTIVE));
+
+        mockMvc.perform(post("/api/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", employee.getId())
+                .header("X-User-Role", "EMPLOYEE")
+                .content("{\"requesterUserId\":\"" + employee.getId() + "\",\"deviceId\":\"" + device.getId() + "\",\"title\":\"Missing description\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("Description is required."))
+                .andExpect(jsonPath("$.path").value("/api/tickets"));
+    }
+
+    @Test
+    void createTicket_shouldDefaultPriorityToMedium_whenPriorityIsMissing() throws Exception {
+        UserEntity employee = userRepository.save(new UserEntity("Alice", "alice-default-priority@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+        DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-DEFAULT-PRIORITY", "Monitor", "MONITOR", "Floor 3", employee, DeviceStatus.ACTIVE));
+
+        mockMvc.perform(post("/api/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", employee.getId())
+                .header("X-User-Role", "EMPLOYEE")
+                .content("{\"requesterUserId\":\"" + employee.getId() + "\",\"deviceId\":\"" + device.getId() + "\",\"title\":\"Default priority\",\"description\":\"Priority was omitted\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.priority").value("MEDIUM"))
+                .andExpect(jsonPath("$.status").value("OPEN"));
     }
 
     @Test
@@ -92,7 +122,7 @@ class TicketControllerIntegrationTest {
                 .content("{\"requesterUserId\":\"" + employee.getId() + "\",\"deviceId\":\"" + device.getId() + "\",\"title\":\"Bad priority\",\"description\":\"Broken\",\"priority\":\"INVALID\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
-    }
+    } 
 
     @Test
     void getTicket_shouldReturnTicketById() throws Exception {
@@ -107,6 +137,37 @@ class TicketControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").value(ticket.getId().intValue()))
                 .andExpect(jsonPath("$.status").value("OPEN"));
     }
+
+        @Test
+        void getTicket_shouldRejectMissingIdentityHeaders() throws Exception {
+                UserEntity employee = userRepository.save(new UserEntity("Alice", "alice-view-headers@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+                DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-VIEW-HEADERS", "Camera", "CAMERA", "Floor 4", employee, DeviceStatus.ACTIVE));
+                TicketEntity ticket = ticketRepository.save(new TicketEntity(employee, device, "Camera failing", "Needs repair", Priority.MEDIUM));
+
+                mockMvc.perform(get("/api/tickets/{id}", ticket.getId()))
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.status").value(403))
+                                .andExpect(jsonPath("$.error").value("FORBIDDEN"))
+                                .andExpect(jsonPath("$.message").value("User role header is required."))
+                                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId()));
+        }
+
+        @Test
+        void getTicket_shouldRejectEmployeeViewingAnotherEmployeesTicket() throws Exception {
+                UserEntity owner = userRepository.save(new UserEntity("Owner", "owner-view-policy@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+                UserEntity otherEmployee = userRepository.save(new UserEntity("Other", "other-view-policy@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+                DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-VIEW-POLICY", "Camera", "CAMERA", "Floor 4", owner, DeviceStatus.ACTIVE));
+                TicketEntity ticket = ticketRepository.save(new TicketEntity(owner, device, "Camera failing", "Needs repair", Priority.MEDIUM));
+
+                mockMvc.perform(get("/api/tickets/{id}", ticket.getId())
+                                .header("X-User-Id", otherEmployee.getId())
+                                .header("X-User-Role", "EMPLOYEE"))
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.status").value(403))
+                                .andExpect(jsonPath("$.error").value("FORBIDDEN"))
+                                .andExpect(jsonPath("$.message").value("User is not permitted to view this ticket."))
+                                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId()));
+        }
 
     @Test
     void getTicket_shouldReturnNotFound_whenMissing() throws Exception {
@@ -136,6 +197,50 @@ class TicketControllerIntegrationTest {
     }
 
     @Test
+    void assignTicket_shouldRejectEmployeeAndPreserveOpenState() throws Exception {
+        UserEntity employee = userRepository.save(new UserEntity("Alice", "alice-assign-employee@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+        DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-ASSIGN-EMPLOYEE", "Dock", "DOCK", "Floor 5", employee, DeviceStatus.ACTIVE));
+        TicketEntity ticket = ticketRepository.save(new TicketEntity(employee, device, "Dock issue", "Needs attention", Priority.HIGH));
+
+        mockMvc.perform(post("/api/tickets/{id}/assign", ticket.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", employee.getId())
+                .header("X-User-Role", "EMPLOYEE")
+                .content("{\"technicianUserId\":999999}"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value(403))
+                .andExpect(jsonPath("$.error").value("FORBIDDEN"))
+                .andExpect(jsonPath("$.message").value("Only a Tech Lead can assign technicians."))
+                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId() + "/assign"));
+
+        org.junit.jupiter.api.Assertions.assertEquals(TicketStatus.OPEN, ticket.getStatus());
+        org.junit.jupiter.api.Assertions.assertNull(ticket.getAssignedTechnician());
+    }
+
+    @Test
+    void assignTicket_shouldRejectNonTechnicianAssigneeAndPreserveOpenState() throws Exception {
+        UserEntity requester = userRepository.save(new UserEntity("Alice", "alice-non-technician@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+        DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-NON-TECHNICIAN", "Keyboard", "KEYBOARD", "Floor 6", requester, DeviceStatus.ACTIVE));
+        UserEntity lead = userRepository.save(new UserEntity("Lead", "lead-non-technician@example.com", UserRole.TECH_LEAD, UserStatus.ACTIVE));
+        UserEntity employee = userRepository.save(new UserEntity("Employee", "employee-assignee@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+        TicketEntity ticket = ticketRepository.save(new TicketEntity(requester, device, "Keyboard issue", "Needs repair", Priority.MEDIUM));
+
+        mockMvc.perform(post("/api/tickets/{id}/assign", ticket.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", lead.getId())
+                .header("X-User-Role", "TECH_LEAD")
+                .content("{\"technicianUserId\":" + employee.getId() + "}"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("BUSINESS_RULE_VIOLATION"))
+                .andExpect(jsonPath("$.message").value("Only an IT technician can be assigned to a ticket."))
+                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId() + "/assign"));
+
+        org.junit.jupiter.api.Assertions.assertEquals(TicketStatus.OPEN, ticket.getStatus());
+        org.junit.jupiter.api.Assertions.assertNull(ticket.getAssignedTechnician());
+    }
+
+    @Test
     void assignTicket_shouldRejectDuplicateAssignment() throws Exception {
         UserEntity requester = userRepository.save(new UserEntity("Alice", "alice6@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
         DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-105", "Keyboard", "KEYBOARD", "Floor 6", requester, DeviceStatus.ACTIVE));
@@ -152,7 +257,10 @@ class TicketControllerIntegrationTest {
                 .header("X-User-Role", "TECH_LEAD")
                 .content("{\"technicianUserId\":\"" + technician.getId() + "\"}"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").value("BUSINESS_RULE_VIOLATION"));
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("BUSINESS_RULE_VIOLATION"))
+                .andExpect(jsonPath("$.message").value("Only OPEN tickets can be assigned."))
+                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId() + "/assign"));
     }
 
     @Test
@@ -170,6 +278,27 @@ class TicketControllerIntegrationTest {
                 .header("X-User-Role", "IT_TECHNICIAN"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+    }
+
+    @Test
+    void startWork_shouldRejectOpenTicketAndPreserveState() throws Exception {
+        UserEntity requester = userRepository.save(new UserEntity("Alice", "alice-start-open@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+        DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-START-OPEN", "Router", "ROUTER", "Floor 7", requester, DeviceStatus.ACTIVE));
+        UserEntity technician = userRepository.save(new UserEntity("Tech", "tech-start-open@example.com", UserRole.IT_TECHNICIAN, UserStatus.ACTIVE));
+        TicketEntity ticket = ticketRepository.save(new TicketEntity(requester, device, "Router issue", "No connection", Priority.HIGH));
+        ticket.setAssignedTechnician(technician);
+        ticketRepository.save(ticket);
+
+        mockMvc.perform(post("/api/tickets/{id}/start", ticket.getId())
+                .header("X-User-Id", technician.getId())
+                .header("X-User-Role", "IT_TECHNICIAN"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("BUSINESS_RULE_VIOLATION"))
+                .andExpect(jsonPath("$.message").value("Ticket must be ASSIGNED before work can start."))
+                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId() + "/start"));
+
+        org.junit.jupiter.api.Assertions.assertEquals(TicketStatus.OPEN, ticket.getStatus());
     }
 
     @Test
@@ -208,7 +337,67 @@ class TicketControllerIntegrationTest {
                 .header("X-User-Role", "IT_TECHNICIAN")
                 .content("{\"resolutionNote\":\"   \"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("Resolution note is required."))
+                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId() + "/resolve"));
+    }
+
+    @Test
+    void ticketLifecycle_shouldCreateAssignStartAndResolveTicket() throws Exception {
+        UserEntity requester = userRepository.save(new UserEntity("Alice", "alice-lifecycle@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+        DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-LIFECYCLE", "Switch", "SWITCH", "Floor 8", requester, DeviceStatus.ACTIVE));
+        UserEntity lead = userRepository.save(new UserEntity("Lead", "lead-lifecycle@example.com", UserRole.TECH_LEAD, UserStatus.ACTIVE));
+        UserEntity technician = userRepository.save(new UserEntity("Tech", "tech-lifecycle@example.com", UserRole.IT_TECHNICIAN, UserStatus.ACTIVE));
+
+        String createResponse = mockMvc.perform(post("/api/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", requester.getId())
+                .header("X-User-Role", "EMPLOYEE")
+                .content("{\"requesterUserId\":\"" + requester.getId() + "\",\"deviceId\":\"" + device.getId() + "\",\"title\":\"Lifecycle switch issue\",\"description\":\"The switch has no connectivity\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.requesterUserId").value(requester.getId().intValue()))
+                .andExpect(jsonPath("$.deviceId").value(device.getId().intValue()))
+                .andExpect(jsonPath("$.title").value("Lifecycle switch issue"))
+                .andExpect(jsonPath("$.description").value("The switch has no connectivity"))
+                .andExpect(jsonPath("$.priority").value("MEDIUM"))
+                .andExpect(jsonPath("$.status").value("OPEN"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        long ticketId = objectMapper.readTree(createResponse).get("id").asLong();
+
+        mockMvc.perform(post("/api/tickets/{id}/assign", ticketId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", lead.getId())
+                .header("X-User-Role", "TECH_LEAD")
+                .content("{\"technicianUserId\":" + technician.getId() + "}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ASSIGNED"))
+                .andExpect(jsonPath("$.assignedTechnicianUserId").value(technician.getId().intValue()));
+
+        mockMvc.perform(post("/api/tickets/{id}/start", ticketId)
+                .header("X-User-Id", technician.getId())
+                .header("X-User-Role", "IT_TECHNICIAN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+
+        mockMvc.perform(post("/api/tickets/{id}/resolve", ticketId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-User-Id", technician.getId())
+                .header("X-User-Role", "IT_TECHNICIAN")
+                .content("{\"resolutionNote\":\"Replaced the failed switch port\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("RESOLVED"))
+                .andExpect(jsonPath("$.assignedTechnicianUserId").value(technician.getId().intValue()))
+                .andExpect(jsonPath("$.resolutionNote").value("Replaced the failed switch port"));
+
+        mockMvc.perform(get("/api/tickets/{id}", ticketId)
+                .header("X-User-Id", requester.getId())
+                .header("X-User-Role", "EMPLOYEE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("RESOLVED"))
+                .andExpect(jsonPath("$.resolutionNote").value("Replaced the failed switch port"));
     }
 
     @Test
@@ -219,6 +408,9 @@ class TicketControllerIntegrationTest {
                 .header("X-User-Role", "EMPLOYEE")
                 .content("{not valid json}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("Malformed JSON request."))
+                .andExpect(jsonPath("$.path").value("/api/tickets"));
     }
 }

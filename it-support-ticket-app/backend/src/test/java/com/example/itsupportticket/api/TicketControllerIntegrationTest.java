@@ -122,7 +122,7 @@ class TicketControllerIntegrationTest {
                 .content("{\"requesterUserId\":\"" + employee.getId() + "\",\"deviceId\":\"" + device.getId() + "\",\"title\":\"Bad priority\",\"description\":\"Broken\",\"priority\":\"INVALID\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
-    }
+    } 
 
     @Test
     void getTicket_shouldReturnTicketById() throws Exception {

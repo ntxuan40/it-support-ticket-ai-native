@@ -3,7 +3,7 @@
 This folder stores project documentation grouped by purpose so it is easier to navigate, review, and maintain.
 
 ## Structure
-
+ 
 - 01-requirements/
   - business requirements and traceability
 - 02-architecture/

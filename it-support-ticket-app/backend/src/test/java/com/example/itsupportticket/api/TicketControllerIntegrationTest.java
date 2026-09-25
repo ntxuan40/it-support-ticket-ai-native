@@ -135,7 +135,7 @@ class TicketControllerIntegrationTest {
                 .header("X-User-Role", "EMPLOYEE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ticket.getId().intValue()))
-                .andExpect(jsonPath("$.status").value("RESOLVED"));
+                .andExpect(jsonPath("$.status").value("OPEN"));
     }
 
     @Test

@@ -81,9 +81,13 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public TicketResponse getTicketById(Long ticketId) {
+    public TicketResponse getTicketById(Long ticketId, Long actingUserId, UserRole actingRole) {
+        validateViewActorIdentity(actingUserId, actingRole);
         TicketEntity ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found."));
+        if (!isAllowedToViewTicket(ticket, actingUserId, actingRole)) {
+            throw new ForbiddenOperationException("User is not permitted to view this ticket.");
+        }
         return ticketMapper.toResponse(ticket);
     }
 
@@ -190,6 +194,23 @@ public class TicketService {
 
     private boolean isAllowedToCreateTicket(UserRole role) {
         return role == UserRole.EMPLOYEE || role == UserRole.ADMIN;
+    }
+
+    private boolean isAllowedToViewTicket(TicketEntity ticket, Long actingUserId, UserRole actingRole) {
+        if (actingRole == UserRole.ADMIN || actingRole == UserRole.TECH_LEAD) {
+            return true;
+        }
+        if (actingRole == UserRole.EMPLOYEE) {
+            return ticket.getRequester().getId().equals(actingUserId);
+        }
+        return ticket.getAssignedTechnician() != null
+                && ticket.getAssignedTechnician().getId().equals(actingUserId);
+    }
+
+    private void validateViewActorIdentity(Long actingUserId, UserRole actingRole) {
+        if (actingUserId == null || actingRole == null) {
+            throw new ForbiddenOperationException("User identity is required.");
+        }
     }
 
     private void validateActorIdentity(Long actingUserId, UserRole actingRole) {

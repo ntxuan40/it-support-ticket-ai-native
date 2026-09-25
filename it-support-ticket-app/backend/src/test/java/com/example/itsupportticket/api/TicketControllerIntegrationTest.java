@@ -138,6 +138,37 @@ class TicketControllerIntegrationTest {
                 .andExpect(jsonPath("$.status").value("OPEN"));
     }
 
+        @Test
+        void getTicket_shouldRejectMissingIdentityHeaders() throws Exception {
+                UserEntity employee = userRepository.save(new UserEntity("Alice", "alice-view-headers@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+                DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-VIEW-HEADERS", "Camera", "CAMERA", "Floor 4", employee, DeviceStatus.ACTIVE));
+                TicketEntity ticket = ticketRepository.save(new TicketEntity(employee, device, "Camera failing", "Needs repair", Priority.MEDIUM));
+
+                mockMvc.perform(get("/api/tickets/{id}", ticket.getId()))
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.status").value(403))
+                                .andExpect(jsonPath("$.error").value("FORBIDDEN"))
+                                .andExpect(jsonPath("$.message").value("User role header is required."))
+                                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId()));
+        }
+
+        @Test
+        void getTicket_shouldRejectEmployeeViewingAnotherEmployeesTicket() throws Exception {
+                UserEntity owner = userRepository.save(new UserEntity("Owner", "owner-view-policy@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+                UserEntity otherEmployee = userRepository.save(new UserEntity("Other", "other-view-policy@example.com", UserRole.EMPLOYEE, UserStatus.ACTIVE));
+                DeviceEntity device = deviceRepository.save(new DeviceEntity("ASSET-VIEW-POLICY", "Camera", "CAMERA", "Floor 4", owner, DeviceStatus.ACTIVE));
+                TicketEntity ticket = ticketRepository.save(new TicketEntity(owner, device, "Camera failing", "Needs repair", Priority.MEDIUM));
+
+                mockMvc.perform(get("/api/tickets/{id}", ticket.getId())
+                                .header("X-User-Id", otherEmployee.getId())
+                                .header("X-User-Role", "EMPLOYEE"))
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.status").value(403))
+                                .andExpect(jsonPath("$.error").value("FORBIDDEN"))
+                                .andExpect(jsonPath("$.message").value("User is not permitted to view this ticket."))
+                                .andExpect(jsonPath("$.path").value("/api/tickets/" + ticket.getId()));
+        }
+
     @Test
     void getTicket_shouldReturnNotFound_whenMissing() throws Exception {
         mockMvc.perform(get("/api/tickets/999999")

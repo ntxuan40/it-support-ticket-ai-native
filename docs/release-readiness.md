@@ -2,37 +2,66 @@
 
 ## 1. Current release status
 
-The project is ready for a local MVP demonstration based on the current implementation and verified backend test evidence.
+READY FOR A LOCAL MVP DEMONSTRATION.
 
-## 2. Release dimensions
+This status is based on fresh evidence from the current repository state, not on assumptions.
+
+## 2. Verification evidence
+
+### Backend
+
+Command executed:
+
+- `cd "d:\posco-dx\github.com\ntxuan40\it-support-ticket-ai-native\it-support-ticket-app\backend" && mvn clean test`
+
+Result:
+
+- BUILD SUCCESS
+- Tests run: 14
+- Failures: 0
+- Errors: 0
+- Skipped: 0
+
+### Frontend
+
+Command executed:
+
+- `cd "d:\posco-dx\github.com\ntxuan40\it-support-ticket-ai-native\it-support-ticket-app\frontend" && npm run build`
+
+Result:
+
+- Vite production build succeeded
+- Output bundle generated in the dist directory without build errors
+
+### Contract and implementation alignment
+
+- The frontend remains strictly aligned to the backend API contract in docs/api-spec.md.
+- Demo-data config and startup logic are consistent with the actual DemoDataInitializer implementation.
+- The misleading placeholder configuration was removed to avoid confusion during release review.
+
+## 3. Release dimensions
 
 ### Functional readiness
 
-- ticket creation works
-- ticket lookup works
-- assignment works
-- work start works
-- resolution works
-- invalid transitions are rejected
-- validation errors are handled consistently
+- Ticket creation, retrieval, assignment, work start, and resolution are implemented and covered by backend tests.
+- Invalid transitions and validation errors are handled by the service and API layer.
+- Demo data initialization is active and deterministic for local demonstration scenarios.
 
 ### Technical readiness
 
-- Java 22 + Spring Boot backend is configured
-- SQLite persistence is functional
-- demo data initialization is implemented
-- frontend is a thin client and builds with Vite
+- Java 22 + Spring Boot backend is configured and tested.
+- SQLite persistence is operational for the local MVP scope.
+- Frontend is a lightweight Vite client with a clean production build.
 
 ### Documentation readiness
 
-- README explains purpose, architecture, setup, and troubleshooting
-- CONTRIBUTING explains workflow and review expectations
-- requirement and API docs reflect the implemented behavior
+- Requirement, architecture, API, testing, and traceability docs reflect the implemented behavior.
+- The review documentation reflects the actual evidence and was updated after the configuration cleanup.
 
-## 3. Remaining caution
+## 4. Remaining caution
 
-Browser automation and end-to-end UI verification remain a manual validation step outside the backend test suite.
+Automated browser-level user-flow validation remains an additional optional step beyond the backend and build verification already completed. The current evidence supports release for local demonstration and internal validation, not for enterprise production deployment.
 
-## 4. Recommended release statement
+## 5. Recommended release statement
 
-This release is a local MVP for internal ticket processing and demonstration, not a production-grade enterprise support platform.
+This release is approved for the local MVP scope: an internal demonstration and validation environment for an IT support ticket workflow. It is not a production-grade enterprise support platform and does not claim broader operational guarantees beyond the verified local-scope behavior.

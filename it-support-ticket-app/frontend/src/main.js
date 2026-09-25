@@ -121,24 +121,13 @@ const ERROR_KEYS = {
 };
 
 function upsertTicket(ticket) {
-  if (!ticket || !Number.isFinite(Number(ticket.id))) {
-    throw new Error(ERROR_KEYS.TICKET_ID_REQUIRED);
+  const index = state.tickets.findIndex((item) => Number(item.id) === Number(ticket.id));
+  if (index >= 0) {
+    state.tickets[index] = ticket;
+  } else {
+    state.tickets.unshift(ticket);
   }
-
-  const ticketId = Number(ticket.id);
-  const existingTicketIndex = state.tickets.findIndex(
-    (item) => Number(item.id) === ticketId
-  );
-
-  const nextTickets =
-    existingTicketIndex >= 0
-      ? state.tickets.map((item) =>
-          Number(item.id) === ticketId ? { ...item, ...ticket } : item
-        )
-      : [ticket, ...state.tickets];
-
-  state.tickets = nextTickets;
-  state.selectedTicketId = ticketId;
+  state.selectedTicketId = ticket.id;
 }
 
 function getSelectedTicket() {

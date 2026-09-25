@@ -1,6 +1,5 @@
 package com.example.itsupportticket.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -8,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import com.example.itsupportticket.domain.model.UserEntity;
 import com.example.itsupportticket.domain.repository.DeviceRepository;
 import com.example.itsupportticket.domain.repository.TicketRepository;
 import com.example.itsupportticket.domain.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -44,6 +46,17 @@ class TicketControllerIntegrationTest {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Test
+    void preflightRequest_shouldAllowFrontendOrigin() throws Exception {
+        mockMvc.perform(options("/api/tickets/3")
+                .header("Origin", "http://192.168.1.31:5173")
+                .header("Access-Control-Request-Method", "GET")
+                .header("Access-Control-Request-Headers", "X-User-Id,X-User-Role"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://192.168.1.31:5173"))
+                .andExpect(header().string("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS"));
+    }
 
     @Test
     void createTicket_shouldReturnCreatedTicket() throws Exception {

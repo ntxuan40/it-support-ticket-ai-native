@@ -33,3 +33,13 @@ scripts
 # OS files
 .DS_Store
 Thumbs.db
+.project
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.m2e.core.prefs
+it-support-ticket-app/backend/.classpath
+it-support-ticket-app/backend/.project
+it-support-ticket-app/backend/.settings/org.eclipse.core.resources.prefs
+it-support-ticket-app/backend/.settings/org.eclipse.jdt.apt.core.prefs
+it-support-ticket-app/backend/.settings/org.eclipse.jdt.core.prefs
+it-support-ticket-app/backend/.settings/org.eclipse.m2e.core.prefs
+it-support-ticket-app/backend/.settings/org.springframework.ide.eclipse.prefs

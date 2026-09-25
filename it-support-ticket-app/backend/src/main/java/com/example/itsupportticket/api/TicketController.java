@@ -40,8 +40,13 @@ public class TicketController {
     }
 
     @GetMapping("/tickets/{id}")
-    public ResponseEntity<TicketResponse> getTicket(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(ticketService.getTicketById(id));
+    public ResponseEntity<TicketResponse> getTicket(
+            @PathVariable("id") Long id,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @RequestHeader(value = "X-User-Role", required = false) String userRole
+    ) {
+        UserRole role = parseRole(userRole);
+        return ResponseEntity.ok(ticketService.getTicketById(id, userId, role));
     }
 
     @PostMapping("/tickets/{id}/assign")

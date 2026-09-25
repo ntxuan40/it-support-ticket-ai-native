@@ -121,24 +121,24 @@ const ERROR_KEYS = {
 };
 
 function upsertTicket(ticket) {
-  const normalizedTicketId = Number(ticket?.id);
-
-  if (!Number.isFinite(normalizedTicketId)) {
+  if (!ticket || !Number.isFinite(Number(ticket.id))) {
     throw new Error(ERROR_KEYS.TICKET_ID_REQUIRED);
   }
 
+  const ticketId = Number(ticket.id);
   const existingTicketIndex = state.tickets.findIndex(
-    (item) => Number(item.id) === normalizedTicketId
+    (item) => Number(item.id) === ticketId
   );
 
-  const nextTickets = existingTicketIndex >= 0
-    ? state.tickets.map((item) =>
-        Number(item.id) === normalizedTicketId ? { ...item, ...ticket } : item
-      )
-    : [ticket, ...state.tickets];
+  const nextTickets =
+    existingTicketIndex >= 0
+      ? state.tickets.map((item) =>
+          Number(item.id) === ticketId ? { ...item, ...ticket } : item
+        )
+      : [ticket, ...state.tickets];
 
   state.tickets = nextTickets;
-  state.selectedTicketId = normalizedTicketId;
+  state.selectedTicketId = ticketId;
 }
 
 function getSelectedTicket() {

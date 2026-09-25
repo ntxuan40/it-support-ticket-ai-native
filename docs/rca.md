@@ -153,17 +153,13 @@ Implementation and production-code changes are outside this RCA document and req
 
 ## 11. Regression Evidence
 
-No regression evidence exists yet because the defect has not been fixed.
+The corrective action is implemented and regression-tested:
 
-Current evidence only proves that:
+- `getTicket_shouldReturnTicketById` proves an authorized employee can view their own ticket.
+- `getTicket_shouldRejectMissingIdentityHeaders` proves missing caller context returns `403 FORBIDDEN`.
+- `getTicket_shouldRejectEmployeeViewingAnotherEmployeesTicket` proves an employee cannot view another employee's ticket.
+- `mvn clean test` passed with 22 tests, 0 failures, 0 errors, and 0 skipped.
+- `TicketController` now passes `X-User-Id` and `X-User-Role` into the view use case.
+- `TicketService` now applies the documented role/ownership view policy before mapping the ticket response.
 
-- Existing happy-path and not-found retrieval tests pass.
-- The full Maven suite passes.
-- The missing authorization behavior remains untested and absent from the view implementation.
-
-After the corrective action, the regression evidence must include:
-
-- A successful authorized-view test.
-- A missing/invalid identity test that returns the documented authorization error.
-- An unauthorized-actor test that returns the documented authorization error.
-- A full `mvn clean test` result with zero failures and zero errors.
+GitHub Actions CI was not newly triggered because no commit or push was performed. The existing workflow remains unchanged and runs `mvn clean test` for Pull Requests; a new PR run is required for fresh CI evidence.
